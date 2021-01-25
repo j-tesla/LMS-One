@@ -39,7 +39,6 @@ inline void showMainMenu(const Library& library) {
         switch (option) {
             case 0:
                 ui::showList("List of books available in the library", library.getFiles());
-                std::cout << "Books" << std::endl;
                 break;
             default:
                 running = false;

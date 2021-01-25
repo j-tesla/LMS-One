@@ -55,7 +55,7 @@ std::string LibraryFile::getType() const {
 }
 
 std::ostream &operator<<(std::ostream &os, const LibraryFile &file) {
-    os << file.name << " type: " << file.type << " title: " << file.title << " author: " << file.author;
+    os << file.name << "  type: " << file.getType() << "  title: " << file.title << "  author: " << file.author;
     return os;
 }
 
