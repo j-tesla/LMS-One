@@ -15,18 +15,21 @@ enum FileType {
 
 class LibraryFile {
 private:
-    std::string name;
-    FileType type;
-    std::string title;
-    std::string author;
-    std::string filePath;
+    std::string name_;
+    FileType type_;
+    std::string title_;
+    std::string author_;
+    std::string filePath_;
 
     void readDetailsFromFile();
 
 public:
-    LibraryFile(std::string name, const std::string &directory, const std::string& type, std::string title, std::string author);
+    LibraryFile(std::string name, const std::string &directory, const std::string &type, std::string title,
+                std::string author);
 
     explicit LibraryFile(std::string name, const std::string &directory);
+
+    LibraryFile(const LibraryFile &other);
 
 
     std::string getType() const;
@@ -40,7 +43,6 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const LibraryFile &file);
 
 };
-
 
 
 #endif //LMS_ONE_LIBRARYFILE_H

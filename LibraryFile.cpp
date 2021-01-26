@@ -8,43 +8,46 @@
 #include <fstream>
 #include "UI.h"
 
-LibraryFile::LibraryFile(std::string name, const std::string &directory) : name(std::move(name)) {
-    this->filePath = directory + "/" + this->name;
+LibraryFile::LibraryFile(std::string name, const std::string &directory) : name_(std::move(name)) {
+    this->filePath_ = directory + "/" + this->name_;
     std::vector<std::string> options = {"novel", "play"};
-    int option = ui::getOption("Select the type of the file: " + this->name, options);
-    this->type = (FileType) option;
+    int option = ui::getOption("Select the type_ of the file: " + this->name_, options);
+    this->type_ = (FileType) option;
     this->readDetailsFromFile();
 }
 
 LibraryFile::LibraryFile(std::string name, const std::string &directory, const std::string &type, std::string title,
-                         std::string author) : name(
-        std::move(name)), title(std::move(title)), author(std::move(author)) {
-    this->filePath = directory + "/" + this->name;
+                         std::string author) : name_(
+        std::move(name)), title_(std::move(title)), author_(std::move(author)) {
+    this->filePath_ = directory + "/" + this->name_;
     if (type == "novel") {
-        this->type = NOVEL;
+        this->type_ = NOVEL;
     } else if (type == "play") {
-        this->type = PLAY;
+        this->type_ = PLAY;
     } else {
         throw;
     }
 }
 
+LibraryFile::LibraryFile(const LibraryFile &other): name_(other.name_), type_(other.type_), title_(other.title_), author_(other.title_), filePath_(other.filePath_) {
+}
+
 void LibraryFile::readDetailsFromFile() {
-    std::ifstream fileStream(this->filePath);
+    std::ifstream fileStream(this->filePath_);
     std::string current_line;
     while (getline(fileStream, current_line)) {
         if (current_line.substr(0, 6) == "Title:") {
-            this->title = current_line.substr(7);
+            this->title_ = current_line.substr(7);
         }
         if (current_line.substr(0, 7) == "Author:") {
-            this->author = current_line.substr(8);
+            this->author_ = current_line.substr(8);
             break;
         }
     }
 }
 
 std::string LibraryFile::getType() const {
-    switch (this->type) {
+    switch (this->type_) {
         case NOVEL:
             return "novel";
         case PLAY:
@@ -55,19 +58,19 @@ std::string LibraryFile::getType() const {
 }
 
 std::ostream &operator<<(std::ostream &os, const LibraryFile &file) {
-    os << file.name << "  type: " << file.getType() << "  title: " << file.title << "  author: " << file.author;
+    os << file.name_ << "  type: " << file.getType() << "  title: " << file.title_ << "  author: " << file.author_;
     return os;
 }
 
 const std::string &LibraryFile::getName() const {
-    return name;
+    return name_;
 }
 
 const std::string &LibraryFile::getTitle() const {
-    return title;
+    return title_;
 }
 
 const std::string &LibraryFile::getAuthor() const {
-    return author;
+    return author_;
 }
 

@@ -14,8 +14,10 @@
 namespace ui {
     void welcome();
 
+    std::string getText(const std::string &text, const std::regex& validPattern = std::regex(".*"));
+
     template<typename T>
-    int getOption(const std::string &text, const std::vector<T> &options) {
+    int getOption(const std::string &text, const std::vector<T> &options, const std::string &optionZero = "") {
         {
             std::vector<std::string> inputs = {"1", "2", "3", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
                                                "15", "16",
@@ -29,6 +31,8 @@ namespace ui {
                 for (int i = 0; i < options.size(); ++i) {
                     std::cout << inputs[i] << ". " << options[i] << std::endl;
                 }
+                if (!optionZero.empty())
+                    std::cout << "0. " << optionZero << std::endl;
                 std::cout << "\033[0m";
 
                 std::string input;
@@ -36,6 +40,8 @@ namespace ui {
                 input = std::regex_replace(input, std::regex(R"(^[\t\n ]+)"), "");
                 input = std::regex_replace(input, std::regex(R"([\t\n ]+$)"), "");
                 option = std::find(inputs.begin(), inputs.begin() + options.size(), input) - inputs.begin();
+                if (input == "0" and !optionZero.empty())
+                    option = -1;
             }
             return option;
         }
@@ -47,7 +53,7 @@ namespace ui {
         {
             std::cout << "\033[35m" << text << "\n" << "\033[0m";
             int i = 1;
-            std::cout <<  "\033[34m";
+            std::cout << "\033[34m";
             for (const auto &x: list) {
                 std::cout << i++ << ". " << x << std::endl;
             }

@@ -14,8 +14,8 @@ class Library {
 
 private:
 
-    std::string libraryPath;
-    std::vector<LibraryFile> files;
+    std::string libraryPath_;
+    std::vector<LibraryFile> files_;
     void updateFilesFromDisk();
     void readIndex();
     void updateIndex();
