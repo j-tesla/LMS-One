@@ -7,7 +7,9 @@
 
 #include <string>
 #include <vector>
-#include "LibraryFile.h"
+#include <unordered_set>
+#include <set>
+#include "Book.h"
 
 class Library {
 
@@ -15,16 +17,14 @@ class Library {
 private:
 
     std::string libraryPath_;
-    std::vector<LibraryFile> files_;
+    std::set<Book> files_{};
     void updateFilesFromDisk();
     void readIndex();
     void updateIndex();
 public:
     explicit Library(std::string library);
 
-    const std::string &getLibraryPath() const;
-
-    const std::vector<LibraryFile> &getFiles() const;
+    std::vector<Book> getFiles() const;
 
 };
 

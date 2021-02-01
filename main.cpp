@@ -1,8 +1,11 @@
+#include <sys/stat.h>
+
 #include <iostream>
 #include <string>
-#include <sys/stat.h>
+
 #include "Library.h"
 #include "UI.h"
+#include "Novel.h"
 
 namespace error_handlers {
     int noLibraryPassed() {
@@ -14,9 +17,9 @@ inline bool pathExists(const std::string &name);
 
 bool caseInsensitiveFind(std::string text, std::string filter);
 
-void showBook(const LibraryFile &book);
+void showBookMenu(const Book &book);
 
-void searchMenu(const Library &library);
+void showSearchMenu(const Library &library);
 
 void showMainMenu(const Library &library);
 
@@ -43,20 +46,20 @@ void showMainMenu(const Library &library) {
         int option = ui::getOption("Main Menu", menuOptions, "exit");
         switch (option) {
             case 0: {
-                bool running = true;
-                while (running) {
+                bool running2 = true;
+                while (running2) {
                     int bookSelected = ui::getOption("List of books available in the library", library.getFiles(),
                                                      "back");
                     if (bookSelected == -1) {
-                        running = false;
+                        running2 = false;
                     } else {
-                        showBook(library.getFiles()[bookSelected]);
+                        showBookMenu(library.getFiles()[bookSelected]);
                     }
                 }
                 break;
             }
             case 1: {
-                searchMenu(library);
+                showSearchMenu(library);
                 break;
             }
             default: {
@@ -68,84 +71,159 @@ void showMainMenu(const Library &library) {
     }
 }
 
-void searchMenu(const Library &library) {
+void showSearchMenu(const Library &library) {
     std::vector<std::string> searchOptions = {"search by filename", "search by title", "search by author name"};
-    int optionSelected = ui::getOption("Select filter", searchOptions, "back");
-    switch (optionSelected) {
-        case 0: {
-            std::string filter = ui::getText("Enter filename to search");
+    bool running = true;
+    while (running) {
+        int optionSelected = ui::getOption("Select filter", searchOptions, "back");
+        switch (optionSelected) {
+            case 0: {
+                std::string filter = ui::getText("Enter filename to search");
 
-            std::vector<LibraryFile> filtered;
+                std::vector<Book> filtered;
 
-            std::copy_if(library.getFiles().begin(), library.getFiles().end(), std::back_inserter(filtered),
-                         [filter](const LibraryFile &file) {
-                             return caseInsensitiveFind(file.getName(), filter);
-                         });
-            bool running = true;
-            while (running) {
-                int bookSelected = ui::getOption("List of matching books in the library", filtered,
-                                                 "back");
-                if (bookSelected == -1) {
-                    running = false;
-                } else {
-                    showBook(library.getFiles()[bookSelected]);
+                std::copy_if(library.getFiles().begin(), library.getFiles().end(), std::back_inserter(filtered),
+                             [filter](const Book &file) {
+                                 return caseInsensitiveFind(file.getName(), filter);
+                             });
+                bool running2 = true;
+                while (running2) {
+                    int bookSelected;
+                    if (filtered.empty()) {
+                        bookSelected = ui::getOption("No matching book found in the library", filtered, "back");
+                    } else {
+                        bookSelected = ui::getOption("List of matching books in the library", filtered, "back");
+                    }
+                    if (bookSelected == -1) {
+                        running2 = false;
+                    } else {
+                        showBookMenu(filtered[bookSelected]);
+                    }
                 }
+                break;
             }
-            break;
-        }
-        case 1: {
-            std::string filter = ui::getText("Enter title to search");
+            case 1: {
+                std::string filter = ui::getText("Enter title to search");
 
-            std::vector<LibraryFile> filtered;
+                std::vector<Book> filtered;
 
-            std::copy_if(library.getFiles().begin(), library.getFiles().end(), std::back_inserter(filtered),
-                         [filter](const LibraryFile &file) {
-                             return caseInsensitiveFind(file.getTitle(), filter);
-                         });
-            bool running = true;
-            while (running) {
-                int bookSelected = ui::getOption("List of matching books in the library", filtered,
-                                                 "back");
-                if (bookSelected == -1) {
-                    running = false;
-                } else {
-                    showBook(library.getFiles()[bookSelected]);
+                std::copy_if(library.getFiles().begin(), library.getFiles().end(), std::back_inserter(filtered),
+                             [filter](const Book &file) {
+                                 return caseInsensitiveFind(file.getTitle(), filter);
+                             });
+                bool running2 = true;
+                while (running2) {
+                    int bookSelected;
+                    if (filtered.empty()) {
+                        bookSelected = ui::getOption("No matching book found in the library", filtered, "back");
+                    } else {
+                        bookSelected = ui::getOption("List of matching books in the library", filtered, "back");
+                    }
+
+                    if (bookSelected == -1) {
+                        running2 = false;
+                    } else {
+                        showBookMenu(filtered[bookSelected]);
+                    }
                 }
+                break;
             }
-            break;
-        }
-        case 2: {
-            std::string filter = ui::getText("Enter author name to search");
+            case 2: {
+                std::string filter = ui::getText("Enter author name to search");
 
-            std::vector<LibraryFile> filtered;
+                std::vector<Book> filtered;
 
-            std::copy_if(library.getFiles().begin(), library.getFiles().end(), std::back_inserter(filtered),
-                         [filter](const LibraryFile &file) {
-                             return caseInsensitiveFind(file.getAuthor(), filter);
-                         });
-            bool running = true;
-            while (running) {
-                int bookSelected = ui::getOption("List of books available in the library", filtered,
-                                                 "back");
-                if (bookSelected == -1) {
-                    running = false;
-                } else {
-                    showBook(library.getFiles()[bookSelected]);
+                std::copy_if(library.getFiles().begin(), library.getFiles().end(), std::back_inserter(filtered),
+                             [filter](const Book &file) {
+                                 return caseInsensitiveFind(file.getAuthor(), filter);
+                             });
+                bool running2 = true;
+                while (running2) {
+                    int bookSelected;
+                    if (filtered.empty()) {
+                        bookSelected = ui::getOption("No matching book found in the library", filtered, "back");
+                    } else {
+                        bookSelected = ui::getOption("List of matching books in the library", filtered, "back");
+                    }
+
+                    if (bookSelected == -1) {
+                        running2 = false;
+                    } else {
+                        showBookMenu(filtered[bookSelected]);
+                    }
                 }
+                break;
             }
-            break;
+            default: {
+                running = false;
+                break;
+            }
         }
     }
 }
 
-void showBook(const LibraryFile &book) {
-    // TODO implement viewing book
+void showBookMenu(const Book &book) {
+    std::vector<std::string> bookOptions = {"View book"};
+    if (book.getType() == "novel") {
+        bookOptions.emplace_back("Show word stats");
+    } else {
+        bookOptions.emplace_back("Show character stats");
+    }
+
+    bool running = true;
+    while (running) {
+        int optionSelected = ui::getOption("Select filter", bookOptions, "back");
+        switch (optionSelected) {
+            case 0: {
+                ui::showBook(book);
+                break;
+            }
+            case 1: {
+                if (book.getType() == "novel") {
+                    std::string query = ui::getText(
+                            "Enter a word to search for top chapters and to paragraphs by the frequency of the word",
+                            std::regex(R"([a-zA-Z]+)"));
+                    unsigned statSize = std::stoi(
+                            ui::getText("Enter n to get top n chapters and top n paragraphs", std::regex(R"(\d+)")));
+
+                    NovelStats stats(book, query, statSize);
+                    bool running2 = true;
+                    while (running2) {
+                        std::vector<std::string> statOptions = {"Top Paragraphs", "Top Chapters"};
+                        int statOption = ui::getOption("Choose to view top paragraphs or chapters", statOptions,
+                                                       "back");
+
+                        switch (statOption) {
+                            case 0: {
+                                // todo print top paras
+                                break;
+                            }
+                            case 1: {
+                                // todo print top chapters
+                                break;
+                            }
+                            default:
+                                running2 = false;
+                                break;
+                        }
+
+                    }
+
+                    // TODO novel stats in progress
+                } else {
+                    // TODO play stats
+                }
+            }
+            default:
+                running = false;
+                break;
+        }
+    }
 }
 
 bool caseInsensitiveFind(std::string text, std::string filter) {
     std::transform(text.begin(), text.end(), text.begin(), ::toupper);
     std::transform(filter.begin(), filter.end(), filter.begin(), ::toupper);
-    std::cout << text.size() << " " << text.find(filter)  << " " << text.size() - 1 << std::endl;
     return text.find(filter) < text.size() - 1;
 
 }

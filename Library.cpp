@@ -6,7 +6,6 @@
 
 #include <utility>
 #include <dirent.h>
-#include <fstream>
 #include <regex>
 #include <iostream>
 
@@ -17,20 +16,20 @@ Library::Library(std::string library) : libraryPath_(std::move(library)) {
 
 void Library::readIndex() {
     std::ifstream index(this->libraryPath_ + "/index.txt");
-    std::string current_line;
-    while (getline(index, current_line)) {
-        current_line = std::regex_replace(current_line, std::regex(R"(^[\t\n ]+)"), "");
-        current_line = std::regex_replace(current_line, std::regex(R"([\t\n ]+$)"), "");
-        std::string fileName = current_line.substr(0, current_line.find('\t'));
-        current_line.erase(0, current_line.find('\t') + 1);
-        std::string fileType = current_line.substr(0, current_line.find('\t'));
-        current_line.erase(0, current_line.find('\t') + 1);
-        std::string fileTitle = current_line.substr(0, current_line.find('\t'));
-        current_line.erase(0, current_line.find('\t') + 1);
-        std::string fileAuthor = current_line.substr(0, current_line.find('\t'));
+    std::string currentLine;
+    while (getline(index, currentLine)) {
+        currentLine = std::regex_replace(currentLine, std::regex(R"(^[\t\n\r ]+)"), "");
+        currentLine = std::regex_replace(currentLine, std::regex(R"([\t\n\r ]+$)"), "");
+        std::string fileName = currentLine.substr(0, currentLine.find('\t'));
+        currentLine.erase(0, currentLine.find('\t') + 1);
+        std::string fileType = currentLine.substr(0, currentLine.find('\t'));
+        currentLine.erase(0, currentLine.find('\t') + 1);
+        std::string fileTitle = currentLine.substr(0, currentLine.find('\t'));
+        currentLine.erase(0, currentLine.find('\t') + 1);
+        std::string fileAuthor = currentLine.substr(0, currentLine.find('\t'));
 
-        LibraryFile newFile(fileName, this->libraryPath_, fileType, fileTitle, fileAuthor);
-        this->files_.emplace_back(newFile);
+        Book newFile(fileName, libraryPath_, fileType, fileTitle, fileAuthor);
+        files_.insert(newFile);
     }
 }
 
@@ -38,29 +37,54 @@ void Library::readIndex() {
 void Library::updateFilesFromDisk() {
     DIR *dr;
     dirent *en;
-    dr = opendir(this->libraryPath_.c_str());
+    dr = opendir(libraryPath_.c_str());
+    std::vector<std::string> inDiskNames{};
+
     if (dr) {
         while ((en = readdir(dr)) != nullptr) {
             std::string filename(en->d_name);
             std::regex regex_filename(".+.txt");
 
             if (std::regex_match(filename, regex_filename) and filename != "index.txt") {
-                bool already_present = false;
-                for (const auto &file: this->files_) {
-                    if (file.getName() == filename) {
-                        already_present = true;
-                        break;
-                    }
-                }
-                if (not already_present) {
-                    LibraryFile newFile(filename, this->libraryPath_);
-                    this->files_.emplace_back(newFile);
-                }
+                inDiskNames.emplace_back(filename);
             }
         }
         closedir(dr);
+        // todo
+        for (const auto &filename : inDiskNames) {
+            bool alreadyPresent = false;
+            for (const auto &file: files_) {
+                if (file.getName() == filename) {
+                    alreadyPresent = true;
+                    break;
+                }
+            }
+            if (not alreadyPresent) {
+                Book newFile(filename, libraryPath_);
+                files_.insert(newFile);
+            }
+        }
+
+        auto it = files_.begin();
+        while (it != files_.end()) {
+            bool deleted = true;
+            for (const auto &filename : inDiskNames) {
+                if (filename == (*it).getName()) {
+                    deleted = false;
+                    break;
+                }
+            }
+            if (deleted) {
+                it = files_.erase(it);
+            }
+
+            ++it;
+        }
+
         this->updateIndex();
     } else {
+        // todo better throw
+        throw ;
         std::cout << "dir absent" << std::endl;
     }
 }
@@ -69,15 +93,12 @@ void Library::updateIndex() {
     std::ofstream indexFile(this->libraryPath_ + "/index.txt");
 
     for (const auto &file: this->files_) {
-        indexFile << file.getName() << "\t" << file.getType() << "\t" << file.getTitle() << "\t" << file.getAuthor() << std::endl;
+        indexFile << file.getName() << "\t" << file.getType() << "\t" << file.getTitle() << "\t" << file.getAuthor()
+                  << std::endl;
     }
     indexFile.close();
 }
 
-const std::string &Library::getLibraryPath() const {
-    return libraryPath_;
-}
-
-const std::vector<LibraryFile> & Library::getFiles() const {
-    return files_;
+std::vector<Book> Library::getFiles() const {
+    return std::vector<Book>(files_.begin(), files_.end());
 }

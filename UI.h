@@ -10,18 +10,21 @@
 #include <iostream>
 #include <regex>
 #include <algorithm>
+#include "Book.h"
 
 namespace ui {
     void welcome();
 
-    std::string getText(const std::string &text, const std::regex& validPattern = std::regex(".*"));
+    std::string getText(const std::string &text, const std::regex &validPattern = std::regex(".*"));
 
     template<typename T>
-    int getOption(const std::string &text, const std::vector<T> &options, const std::string &optionZero = "") {
+    int getOption(const std::string &text, const T &options, const std::string &optionZero = "") {
         {
-            std::vector<std::string> inputs = {"1", "2", "3", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
-                                               "15", "16",
-                                               "17", "18", "19", "20"};
+            std::vector<std::string> inputs;
+            inputs.reserve(options.size());
+            for (int i = 0; i < options.size(); ++i) {
+                inputs.emplace_back(std::to_string(i + 1));
+            }
 
             std::cout << "\033[35m" << text << "\n" << "\033[0m";
 
@@ -49,7 +52,7 @@ namespace ui {
     }
 
     template<typename T>
-    void showList(const std::string &text, const std::vector<T> &list) {
+    void showList(const std::string &text, const T &list) {
         {
             std::cout << "\033[35m" << text << "\n" << "\033[0m";
             int i = 1;
@@ -60,6 +63,8 @@ namespace ui {
             std::cout << "\033[0m";
         }
     }
+
+    void showBook(const Book &file);
 }
 
 
