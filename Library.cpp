@@ -27,12 +27,14 @@ void Library::readIndex() {
         std::string fileTitle = currentLine.substr(0, currentLine.find('\t'));
         currentLine.erase(0, currentLine.find('\t') + 1);
         std::string fileAuthor = currentLine.substr(0, currentLine.find('\t'));
-
-        Book newFile(fileName, libraryPath_, fileType, fileTitle, fileAuthor);
+        currentLine.erase(0, currentLine.find('\t') + 1);
+        std::string fileReleaseDate = currentLine.substr(0, currentLine.find('\t'));
+        currentLine.erase(0, currentLine.find('\t') + 1);
+        std::string fileLanguage = currentLine.substr(0, currentLine.find('\t'));
+        Book newFile(fileName, libraryPath_, fileType, fileTitle, fileAuthor, fileReleaseDate, fileLanguage);
         files_.insert(newFile);
     }
 }
-
 
 void Library::updateFilesFromDisk() {
     DIR *dr;
@@ -81,20 +83,18 @@ void Library::updateFilesFromDisk() {
             ++it;
         }
 
-        this->updateIndex();
+        updateIndex();
     } else {
-        // todo better throw
-        throw ;
-        std::cout << "dir absent" << std::endl;
+        throw std::runtime_error("Failed to access directory: " + libraryPath_ + "\n");
     }
 }
 
 void Library::updateIndex() {
-    std::ofstream indexFile(this->libraryPath_ + "/index.txt");
+    std::ofstream indexFile(libraryPath_ + "/index.txt");
 
-    for (const auto &file: this->files_) {
+    for (const auto &file: files_) {
         indexFile << file.getName() << "\t" << file.getType() << "\t" << file.getTitle() << "\t" << file.getAuthor()
-                  << std::endl;
+                  << "\t" << file.getReleaseDate() << "\t" << file.getLanguage() << std::endl;
     }
     indexFile.close();
 }

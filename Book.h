@@ -18,17 +18,19 @@ private:
         NOVEL, PLAY
     };
 
-    std::string name_;
-    FileType type_;
-    std::string title_;
-    std::string author_;
-    std::string filePath_;
+    std::string name_{};
+    FileType type_{};
+    std::string title_{};
+    std::string author_{};
+    std::string releaseDate_{};
+    std::string language_{};
+    std::string filePath_{};
 
     void readDetailsFromFile();
 
 public:
     Book(std::string name, const std::string &directory, const std::string &type, std::string title,
-         std::string author);
+         std::string author, std::string releaseDate, std::string language);
 
     explicit Book(std::string name, const std::string &directory);
 
@@ -41,6 +43,10 @@ public:
     const std::string &getTitle() const;
 
     const std::string &getAuthor() const;
+
+    const std::string &getReleaseDate() const;
+
+    const std::string &getLanguage() const;
 
     bool operator<(const Book &rhs) const;
 
