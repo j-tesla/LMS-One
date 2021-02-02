@@ -10,7 +10,7 @@
 #include <ostream>
 #include <fstream>
 #include <vector>
-#include "Novel.h"
+//#include "Novel.h"
 
 class Book {
 private:
@@ -46,7 +46,7 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Book &file);
 
-    friend class LibraryFileView;
+    friend class BookView;
 
     friend class NovelStats;
 

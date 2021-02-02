@@ -5,4 +5,4 @@ project(LMS_One)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(LMS_One main.cpp Library.cpp Library.h Book.cpp Book.h UI.h UI.cpp Novel.cpp Novel.h Play.cpp Play.h)
+add_executable(LMS_One main.cpp Library.cpp Library.h Book.cpp Book.h UI.h UI.cpp NovelStats.cpp NovelStats.h PlayStats.cpp PlayStats.h)

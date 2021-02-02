@@ -2,15 +2,43 @@
 // Created by jsharp on 1/27/21.
 //
 
-#ifndef LMS_ONE_NOVEL_H
-#define LMS_ONE_NOVEL_H
+#ifndef LMS_ONE_NOVELSTATS_H
+#define LMS_ONE_NOVELSTATS_H
 
 #include <string>
 #include <vector>
 #include <set>
 #include <queue>
+#include <ostream>
 
 #include "Book.h"
+
+
+class Paragraph;
+
+class Chapter;
+
+class NovelStats {
+    const Book book_;
+    const std::string word_{};
+    const unsigned n_{};
+    std::priority_queue<Paragraph, std::vector<Paragraph>, std::greater<>> topParagraphs_{};
+    std::priority_queue<Chapter, std::vector<Chapter>, std::greater<>> topChapters_{};
+
+    void addParagraph(const Paragraph &paragraph);
+
+    void addChapter(const Chapter &chapter);
+
+    void generateStats();
+
+public:
+    explicit NovelStats(const Book &book, std::string word, unsigned n);
+
+    std::vector<Paragraph> getTopParagraphs();
+
+    std::vector<Chapter> getTopChapters();
+
+};
 
 class Paragraph {
 private:
@@ -37,6 +65,7 @@ public:
 
     bool operator>=(const Paragraph &rhs) const;
 
+    friend std::ostream &operator<<(std::ostream &os, const Paragraph &paragraph);
 };
 
 class Chapter {
@@ -49,6 +78,8 @@ public:
     Chapter(std::vector<Paragraph> paragraphs, std::string word);
 
     const std::vector<Paragraph> &getParagraphs() const;
+
+    std::vector<std::string> getLines() const;
 
     Chapter(const Chapter &chapter);
 
@@ -63,24 +94,9 @@ public:
     bool operator<=(const Chapter &rhs) const;
 
     bool operator>=(const Chapter &rhs) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Chapter &chapter);
 };
 
-class NovelStats {
-    const Book file_;
-    const std::string word_{};
-    const unsigned n_{};
-    std::priority_queue<Paragraph> topParagraphs_{};
-    std::priority_queue<Chapter> topChapters_{};
 
-    void addParagraph(Paragraph paragraph);
-
-    void addChapter(const Chapter &chapter);
-
-    void generateStats();
-
-public:
-    explicit NovelStats(const Book &file, std::string word, unsigned n);
-
-};
-
-#endif //LMS_ONE_NOVEL_H
+#endif //LMS_ONE_NOVELSTATS_H

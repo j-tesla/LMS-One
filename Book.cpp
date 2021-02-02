@@ -90,8 +90,8 @@ BookView::BookView(const Book &file) : fileStream_(new std::ifstream(file.filePa
     std::string currentLine;
     while (currentLine.substr(0, startMessage.length()) != startMessage) {
         getline(*fileStream_, currentLine);
-        currentLine = std::regex_replace(currentLine, std::regex(R"(^[\t\n ]+)"), "");
-        currentLine = std::regex_replace(currentLine, std::regex(R"([\t\n ]+$)"), "");
+        currentLine = std::regex_replace(currentLine, std::regex(R"(^[\t\n\r ]+)"), "");
+        currentLine = std::regex_replace(currentLine, std::regex(R"([\t\n\r ]+$)"), "");
     }
 }
 

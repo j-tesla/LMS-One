@@ -5,7 +5,8 @@
 
 #include "Library.h"
 #include "UI.h"
-#include "Novel.h"
+#include "NovelStats.h"
+#include "PlayStats.h"
 
 namespace error_handlers {
     int noLibraryPassed() {
@@ -21,7 +22,7 @@ void showBookMenu(const Book &book);
 
 void showSearchMenu(const Library &library);
 
-void showMainMenu(const Library &library);
+void showMainMenu(const std::string &library_location);
 
 int main(int argc, char *argv[]) {
 
@@ -33,13 +34,14 @@ int main(int argc, char *argv[]) {
         return error_handlers::noLibraryPassed();
     }
     ui::welcome();
-    Library library(library_location);
 
-    showMainMenu(library);
+
+    showMainMenu(library_location);
     return 0;
 }
 
-void showMainMenu(const Library &library) {
+void showMainMenu(const std::string &library_location) {
+    Library library(library_location);
     bool running = true;
     while (running) {
         std::vector<std::string> menuOptions = {"List all the books", "Search for a book"};
@@ -80,9 +82,10 @@ void showSearchMenu(const Library &library) {
             case 0: {
                 std::string filter = ui::getText("Enter filename to search");
 
-                std::vector<Book> filtered;
+                auto libraryFiles = library.getFiles();
+                std::vector<Book> filtered{};
 
-                std::copy_if(library.getFiles().begin(), library.getFiles().end(), std::back_inserter(filtered),
+                std::copy_if(libraryFiles.begin(), libraryFiles.end(), std::back_inserter(filtered),
                              [filter](const Book &file) {
                                  return caseInsensitiveFind(file.getName(), filter);
                              });
@@ -105,9 +108,10 @@ void showSearchMenu(const Library &library) {
             case 1: {
                 std::string filter = ui::getText("Enter title to search");
 
-                std::vector<Book> filtered;
+                auto libraryFiles = library.getFiles();
+                std::vector<Book> filtered{};
 
-                std::copy_if(library.getFiles().begin(), library.getFiles().end(), std::back_inserter(filtered),
+                std::copy_if(libraryFiles.begin(), libraryFiles.end(), std::back_inserter(filtered),
                              [filter](const Book &file) {
                                  return caseInsensitiveFind(file.getTitle(), filter);
                              });
@@ -131,9 +135,10 @@ void showSearchMenu(const Library &library) {
             case 2: {
                 std::string filter = ui::getText("Enter author name to search");
 
-                std::vector<Book> filtered;
+                auto libraryFiles = library.getFiles();
+                std::vector<Book> filtered{};
 
-                std::copy_if(library.getFiles().begin(), library.getFiles().end(), std::back_inserter(filtered),
+                std::copy_if(libraryFiles.begin(), libraryFiles.end(), std::back_inserter(filtered),
                              [filter](const Book &file) {
                                  return caseInsensitiveFind(file.getAuthor(), filter);
                              });
@@ -186,6 +191,7 @@ void showBookMenu(const Book &book) {
                     unsigned statSize = std::stoi(
                             ui::getText("Enter n to get top n chapters and top n paragraphs", std::regex(R"(\d+)")));
 
+                    ui::showLine("Please be patient. It takes a few moments to process the book.");
                     NovelStats stats(book, query, statSize);
                     bool running2 = true;
                     while (running2) {
@@ -195,23 +201,57 @@ void showBookMenu(const Book &book) {
 
                         switch (statOption) {
                             case 0: {
-                                // todo print top paras
+                                bool running3 = true;
+                                auto topParagraphs = stats.getTopParagraphs();
+                                while (running3) {
+                                    unsigned chosenPara = ui::getOption("Top paragraphs:", topParagraphs, "back");
+                                    if (chosenPara == -1) {
+                                        running3 = false;
+                                    } else {
+                                        ui::showLines(topParagraphs[chosenPara].getLines());
+                                    }
+                                }
                                 break;
                             }
                             case 1: {
-                                // todo print top chapters
+                                bool running3 = true;
+                                auto topChapters = stats.getTopChapters();
+                                while (running3) {
+                                    unsigned chosenChapter = ui::getOption("Top paragraphs:", topChapters, "back");
+                                    if (chosenChapter == -1) {
+                                        running3 = false;
+                                    } else {
+                                        ui::showLines(topChapters[chosenChapter].getLines());
+                                    }
+                                }
                                 break;
                             }
                             default:
                                 running2 = false;
                                 break;
                         }
-
                     }
+                } else if (book.getType() == "play") {
+                    ui::showLine("Please be patient. It takes a few moments to process the book.");
+                    PlayStats stats(book);
 
-                    // TODO novel stats in progress
+                    bool running2 = true;
+                    while (running2) {
+                        int characterSelected = ui::getOption(
+                                "Select a character to view his/her co-characters.",
+                                stats.getCharacters(), "back");
+
+                        if (characterSelected == -1) {
+                            running2 = false;
+                        } else {
+                            ui::showList("Characters who acted in at least one scene with " +
+                                         stats.getCharacter(characterSelected),
+                                         stats.getCoCharacters(characterSelected));
+                            ui::getText("Press enter to continue.", std::regex(".*"));
+                        }
+                    }
                 } else {
-                    // TODO play stats
+                    ui::showLine("Books of type " + book.getType() + " are not supported yet.");
                 }
             }
             default:
@@ -222,8 +262,16 @@ void showBookMenu(const Book &book) {
 }
 
 bool caseInsensitiveFind(std::string text, std::string filter) {
-    std::transform(text.begin(), text.end(), text.begin(), ::toupper);
-    std::transform(filter.begin(), filter.end(), filter.begin(), ::toupper);
+    for (char &c: text) {
+        if (c >= 'a' and c <= 'z') {
+            c += 'A' - 'a';
+        }
+    }
+    for (char &c: filter) {
+        if (c >= 'a' and c <= 'z') {
+            c += 'A' - 'a';
+        }
+    }
     return text.find(filter) < text.size() - 1;
 
 }

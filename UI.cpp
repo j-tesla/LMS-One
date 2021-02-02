@@ -31,27 +31,25 @@ std::string ui::getText(const std::string &text, const std::regex &validPattern)
 
 void ui::showBook(const Book &file) {
     BookView fileView(file);
-    unsigned pageSize = std::stoi(getText("Enter number of lines_ to view in a page", std::regex(R"(\d+)")));
+    unsigned pageSize = std::stoi(getText("Enter number of lines to view in a page", std::regex(R"(\d+)")));
     while (!fileView.empty()) {
         for (const auto &line: fileView.getLines(pageSize)) {
             std::cout << line << std::endl;
         }
-        std::cout << "\033[1m" << "Press enter to print next page, q and enter to close." << "\033[0m" << std::endl;
+        std::cout << "\033[32m" << "Press enter to print next page, q and enter to close." << "\033[0m" << std::endl;
         std::string input = "not empty lol";
         bool running = true;
-        while (!input.empty()) {
+        while (true) {
             getline(std::cin, input);
             input = std::regex_replace(input, std::regex(R"(^[\t\n\r ]+)"), "");
             input = std::regex_replace(input, std::regex(R"([\t\n\r ]+$)"), "");
 
-            if (input == "q") {
+            if (input == "q" or input == "0") {
                 running = false;
-                break;
             }
-        }
-        if (not running) {
             break;
         }
+        if (not running)
+            break;
     }
-
 }
