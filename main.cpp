@@ -12,11 +12,6 @@
 #include "NovelStats.h"
 #include "PlayStats.h"
 
-namespace error_handlers {
-    int noLibraryPassed() {
-        return 1;
-    }
-}
 
 inline bool pathExists(const std::string &name);
 
@@ -30,12 +25,13 @@ void showMainMenu(const std::string &library_location);
 
 int main(int argc, char *argv[]) {
 
-    if (argc < 2)
-        return error_handlers::noLibraryPassed();
+    if (argc < 2) {
+        throw std::runtime_error("Path to library is expected as an argument.\n");
+    }
 
     const std::string library_location(argv[1]);
     if (not pathExists(library_location)) {
-        return error_handlers::noLibraryPassed();
+        throw std::runtime_error("Failed to access the directory: " + library_location + "\n");
     }
     ui::welcome();
 
@@ -249,7 +245,7 @@ void showBookMenu(const Book &book) {
                             running2 = false;
                         } else {
                             ui::showList("Characters who acted in at least one scene with " +
-                                         stats.getCharacter(characterSelected),
+                                         stats.getCharacter(characterSelected) + ":",
                                          stats.getCoCharacters(characterSelected));
                             ui::getText("Press enter to continue.", std::regex(".*"));
                         }
