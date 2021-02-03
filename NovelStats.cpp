@@ -89,25 +89,27 @@ std::vector<Chapter> NovelStats::getTopChapters() {
     return temp;
 }
 
-Paragraph::Paragraph(std::vector<std::string> lines, std::string word) : lines_(std::move(lines)),
-                                                                         word_(std::move(word)), word_count(0) {
-    for (const std::string &line : lines_) {
-        std::stringstream lineStream(line);
-        std::string currentWord;
+Paragraph::Paragraph(std::vector<std::string> lines, std::string word) : lines_(lines),
+                                                                         word_(word), word_count(0) {
+    for (char &c: word) {
+        if (c <= 'z' and c >= 'a') {
+            c += 'A' - 'a';
+        }
+    }
+    for (std::string &line : lines) {
 
-        for (char &c: word_) {
+
+        for (char &c: line) {
             if (c <= 'z' and c >= 'a') {
                 c += 'A' - 'a';
             }
         }
 
+        std::stringstream lineStream(line);
+        std::string currentWord;
+
         while (lineStream >> currentWord) {
-            for (char &c: currentWord) {
-                if (c <= 'z' and c >= 'a') {
-                    c += 'A' - 'a';
-                }
-            }
-            if (std::regex_match(currentWord, std::regex(R"([^a-zA-Z]*)" + word_ + R"([^a-zA-Z]*)"))) {
+            if (std::regex_match(currentWord, std::regex(R"([^A-Z]*)" + word + R"([^A-Z]*)"))) {
                 ++word_count;
             }
         }
@@ -179,7 +181,8 @@ bool Chapter::operator>=(const Chapter &rhs) const {
 }
 
 std::ostream &operator<<(std::ostream &os, const Chapter &chapter) {
-    os << chapter.paragraphs_[0].getLines()[0]  << " (" << chapter.word_count << " occurrence(s) of " << chapter.word_ << ")" ;
+    os << chapter.paragraphs_[0].getLines()[0] << " (" << chapter.word_count << " occurrence(s) of " << chapter.word_
+       << ")";
     return os;
 }
 
