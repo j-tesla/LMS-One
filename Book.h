@@ -1,16 +1,15 @@
 //
-// Created by jsharp on 1/20/21.
+// Created by Jayanth PSY on 1/20/21.
 //
 
 #ifndef LMS_ONE_BOOK_H
 #define LMS_ONE_BOOK_H
 
-
 #include <string>
 #include <ostream>
 #include <fstream>
 #include <vector>
-//#include "Novel.h"
+
 
 class Book {
 private:

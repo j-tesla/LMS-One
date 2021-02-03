@@ -1,5 +1,5 @@
 //
-// Created by jsharp on 1/27/21.
+// Created by Jayanth PSY on 1/27/21.
 //
 
 #ifndef LMS_ONE_NOVELSTATS_H
@@ -55,8 +55,6 @@ public:
 
     unsigned int getWordCount() const;
 
-    const std::string &getWord() const;
-
     bool operator<(const Paragraph &rhs) const;
 
     bool operator>(const Paragraph &rhs) const;
@@ -70,20 +68,16 @@ public:
 
 class Chapter {
 private:
-    std::vector<Paragraph> paragraphs_;
-    std::string word_;
-    unsigned word_count;
+    std::vector<Paragraph> paragraphs_{};
+    std::string word_{};
+    unsigned word_count{};
 
 public:
     Chapter(std::vector<Paragraph> paragraphs, std::string word);
 
-    const std::vector<Paragraph> &getParagraphs() const;
-
     std::vector<std::string> getLines() const;
 
     Chapter(const Chapter &chapter);
-
-    const std::string &getWord() const;
 
     unsigned int getWordCount() const;
 

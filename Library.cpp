@@ -1,5 +1,5 @@
 //
-// Created by jsharp on 1/13/21.
+// Created by Jayanth PSY on 1/13/21.
 //
 
 #include "Library.h"
@@ -9,13 +9,14 @@
 #include <regex>
 #include <iostream>
 
+
 Library::Library(std::string library) : libraryPath_(std::move(library)) {
-    this->readIndex();
-    this->updateFilesFromDisk();
+    readIndex();
+    updateFilesFromDisk();
 }
 
 void Library::readIndex() {
-    std::ifstream index(this->libraryPath_ + "/index.txt");
+    std::ifstream index(libraryPath_ + "/index.txt");
     std::string currentLine;
     while (getline(index, currentLine)) {
         currentLine = std::regex_replace(currentLine, std::regex(R"(^[\t\n\r ]+)"), "");
@@ -52,7 +53,6 @@ void Library::updateFilesFromDisk() {
             }
         }
         closedir(dr);
-        // todo
         for (const auto &filename : inDiskNames) {
             bool alreadyPresent = false;
             for (const auto &file: files_) {
@@ -79,7 +79,6 @@ void Library::updateFilesFromDisk() {
             if (deleted) {
                 it = files_.erase(it);
             }
-
             ++it;
         }
 

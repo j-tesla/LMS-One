@@ -1,5 +1,5 @@
 //
-// Created by jsharp on 1/24/21.
+// Created by Jayanth PSY on 1/24/21.
 //
 
 #ifndef LMS_ONE_UI_H
@@ -11,7 +11,7 @@
 #include <regex>
 #include <algorithm>
 #include "Book.h"
-//#include "NovelStats.h"
+
 
 namespace ui {
     void welcome();
@@ -34,7 +34,6 @@ namespace ui {
             std::cout << "\033[32m" << "To select an option, enter its number.\n" << "\033[0m" << "\033[34m";
             int i = 0;
             for (const auto &option: options) {
-//                for (int i = 0; i < options.size(); ++i) {
                 std::cout << ++i << ". " << option << std::endl;
             }
             if (!optionZero.empty())
@@ -83,16 +82,17 @@ namespace ui {
                 ++line;
             }
             if (running) {
+                std::cout << "\033[32m" << "Press enter to print next page, q and enter to close." << "\033[0m" << std::endl;
                 std::string input = "not empty lol";
-                while (!input.empty()) {
+                while (true) {
                     getline(std::cin, input);
                     input = std::regex_replace(input, std::regex(R"(^[\t\n\r ]+)"), "");
                     input = std::regex_replace(input, std::regex(R"([\t\n\r ]+$)"), "");
 
-                    if (input == "q") {
+                    if (input == "q" or input == "0") {
                         running = false;
-                        break;
                     }
+                    break;
                 }
                 if (not running) {
                     break;

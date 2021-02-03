@@ -1,3 +1,7 @@
+//
+// Created by Jayanth PSY on 1/13/21.
+//
+
 #include <sys/stat.h>
 
 #include <iostream>
@@ -186,7 +190,7 @@ void showBookMenu(const Book &book) {
             case 1: {
                 if (book.getType() == "novel") {
                     std::string query = ui::getText(
-                            "Enter a word to search for top chapters and to paragraphs by the frequency of the word",
+                            "Enter a word to search for top chapters and top paragraphs by the frequency of the word",
                             std::regex(R"([a-zA-Z]+)"));
                     unsigned statSize = std::stoi(
                             ui::getText("Enter n to get top n chapters and top n paragraphs", std::regex(R"(\d+)")));
@@ -253,10 +257,12 @@ void showBookMenu(const Book &book) {
                 } else {
                     ui::showLine("Books of type " + book.getType() + " are not supported yet.");
                 }
+                break;
             }
-            default:
+            default: {
                 running = false;
                 break;
+            }
         }
     }
 }

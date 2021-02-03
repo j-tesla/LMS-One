@@ -1,14 +1,13 @@
 //
-
+// Created by Jayanth PSY on 1/27/21.
 //
-// Created by jsharp on 1/27/21.
-
 
 #include <utility>
 #include <regex>
 #include <iostream>
 
 #include "NovelStats.h"
+
 
 NovelStats::NovelStats(const Book &book, std::string word, unsigned n) : book_(book), word_(std::move(word)),
                                                                          n_(n) {
@@ -96,12 +95,12 @@ Paragraph::Paragraph(std::vector<std::string> lines, std::string word) : lines_(
         std::stringstream lineStream(line);
         std::string currentWord;
 
-
         for (char &c: word_) {
             if (c <= 'z' and c >= 'a') {
                 c += 'A' - 'a';
             }
         }
+
         while (lineStream >> currentWord) {
             for (char &c: currentWord) {
                 if (c <= 'z' and c >= 'a') {
@@ -146,16 +145,12 @@ bool Paragraph::operator>=(const Paragraph &rhs) const {
     return !(*this < rhs);
 }
 
-const std::string &Paragraph::getWord() const {
-    return word_;
-}
-
 unsigned int Paragraph::getWordCount() const {
     return word_count;
 }
 
 std::ostream &operator<<(std::ostream &os, const Paragraph &paragraph) {
-    os << paragraph.lines_[0].substr(0, 30) << " ... " << "(" << paragraph.word_count << " occurrence(s) of "
+    os << paragraph.lines_[0].substr(0, 30) << " ... (" << paragraph.word_count << " occurrence(s) of "
        << paragraph.word_ << ")";
     return os;
 }
@@ -163,16 +158,8 @@ std::ostream &operator<<(std::ostream &os, const Paragraph &paragraph) {
 Chapter::Chapter(const Chapter &chapter) : paragraphs_(chapter.paragraphs_), word_(chapter.word_),
                                            word_count(chapter.word_count) {}
 
-const std::string &Chapter::getWord() const {
-    return word_;
-}
-
 unsigned int Chapter::getWordCount() const {
     return word_count;
-}
-
-const std::vector<Paragraph> &Chapter::getParagraphs() const {
-    return paragraphs_;
 }
 
 bool Chapter::operator<(const Chapter &rhs) const {
@@ -192,7 +179,7 @@ bool Chapter::operator>=(const Chapter &rhs) const {
 }
 
 std::ostream &operator<<(std::ostream &os, const Chapter &chapter) {
-    os << chapter.paragraphs_[0].getLines()[0]  << "(" << chapter.word_count << " occurrence(s) of " << chapter.word_ << ")" ;
+    os << chapter.paragraphs_[0].getLines()[0]  << " (" << chapter.word_count << " occurrence(s) of " << chapter.word_ << ")" ;
     return os;
 }
 
@@ -203,10 +190,5 @@ std::vector<std::string> Chapter::getLines() const {
         lines.reserve(lines.size() + paraLines.size());
         lines.insert(lines.end(), paraLines.begin(), paraLines.end());
     }
-
     return lines;
 }
-
-//Novel::Novel(const Book &other) : Book(other) {
-////    stats = NovelStats(*this)
-//}
